@@ -12,7 +12,7 @@ public abstract class MovableEntity extends Entity {
     // בנאי: מקבל רק מיקום, מהירות ותמונה. (בלי גודל!)
     public MovableEntity(float x, float y, BufferedImage sprite) {
 
-        // קורא לבנאי של Entity שכתבת למעלה
+        // קורא לבנאי של Entity שכתבת למעלה ך
         // הוא מעביר לו רק את מה שהוא צריך: x, y, sprite
         super(x, y, sprite);
 
