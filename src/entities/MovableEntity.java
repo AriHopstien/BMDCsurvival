@@ -22,8 +22,8 @@ public abstract class MovableEntity extends Entity {
     }
 
     public void move() {
-        x += dx * speed* Time.deltaTime;
-        y += dy * speed* Time.deltaTime;
+        x += dx * speed* (float) Time.deltaTime;
+        y += dy * speed* (float)Time.deltaTime;
     }
 
     // פונקציות עזר לכיוונים
