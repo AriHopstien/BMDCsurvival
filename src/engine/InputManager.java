@@ -9,10 +9,10 @@ public class InputManager implements KeyListener {
     public boolean W_key, S_Key, A_key, D_key, SPACE_key, ENTER_key;
 
     public void update() {
-        W_key     = keys[KeyEvent.VK_W] || keys[KeyEvent.VK_UP];
-        S_Key   = keys[KeyEvent.VK_S] || keys[KeyEvent.VK_DOWN];
-        A_key   = keys[KeyEvent.VK_A] || keys[KeyEvent.VK_LEFT];
-        D_key  = keys[KeyEvent.VK_D] || keys[KeyEvent.VK_RIGHT];
+        W_key = keys[KeyEvent.VK_W] || keys[KeyEvent.VK_UP];
+        S_Key = keys[KeyEvent.VK_S] || keys[KeyEvent.VK_DOWN];
+        A_key = keys[KeyEvent.VK_A] || keys[KeyEvent.VK_LEFT];
+        D_key = keys[KeyEvent.VK_D] || keys[KeyEvent.VK_RIGHT];
         SPACE_key = keys[KeyEvent.VK_SPACE];
         ENTER_key = keys[KeyEvent.VK_ENTER];
     }
