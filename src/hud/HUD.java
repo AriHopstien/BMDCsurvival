@@ -7,20 +7,19 @@ import java.awt.*;
 public class HUD {
     private Player player;
     private PhoneUI phoneUI;
-        private MessageBoxTop topMessageBox;
-        private MessageBoxBottom bottomMessageBox;
+        private MassageBoxTop topMessageBox;
+        private MassageBoxBottom bottomMessageBox;
 
         public HUD(Player player) {
             this.player = player;
 
             this.phoneUI = new PhoneUI(player);
-            this.topMessageBox = new MessageBoxTop();
-            this.bottomMessageBox = new MessageBoxBottom();
+            this.topMessageBox = new MassageBoxTop();
+            this.bottomMessageBox = new MassageBoxBottom();
         }
 
         // עדכון לוגי של כל רכיבי ה-HUD
         public void update(double deltaTime) {
-            phoneUI.update(deltaTime);
             topMessageBox.update(deltaTime);
             bottomMessageBox.update(deltaTime);
         }
@@ -35,7 +34,7 @@ public class HUD {
         // קלט מקלדת
         public void keyPressed(int keyCode) {
             phoneUI.keyPressed(keyCode);
-            bottomMessageBox.keyPressed(keyCode);
+           // bottomMessageBox.keyPressed(keyCode);
         }
 
         public void keyReleased(int keyCode) {

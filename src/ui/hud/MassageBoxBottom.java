@@ -1,4 +1,4 @@
-package hud;
+package ui.hud;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -44,4 +44,6 @@ public class MassageBoxBottom {
     public boolean isVisible() {
         return visible;
     }
+
 }
+

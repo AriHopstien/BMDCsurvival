@@ -1,11 +1,6 @@
 package hud;
-
 import java.awt.*;
-
-public class PhoneUI {
-    public void update(double deltaTime) {
-    }
-    import java.awt.Color;
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
@@ -177,6 +172,7 @@ import util.Assets;
                 this.text = text;
             }
         }
+
     }
 
-}
+
