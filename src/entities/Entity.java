@@ -7,11 +7,11 @@ public class Entity {
     int width, height;
     BufferedImage sprite;
     Rectangle bounds;
-    public Entity(float x, float y, int width, int height, BufferedImage sprite) {
+    public Entity(float x, float y, BufferedImage sprite) {
         this.x = x;
         this.y = y;
-        this.width = width;
-        this.height = height;
+        this.width = 32;
+        this.height = 32;
         this.sprite = sprite;
         bounds = new Rectangle(0,0 ,width, height);
     }
