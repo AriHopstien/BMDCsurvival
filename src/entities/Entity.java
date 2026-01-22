@@ -10,8 +10,8 @@ public class Entity {
     public Entity(float x, float y, BufferedImage sprite) {
         this.x = x;
         this.y = y;
-        this.width = 32;
-        this.height = 32;
+        this.width = 64;
+        this.height = 64;
         this.sprite = sprite;
         bounds = new Rectangle(0,0 ,width, height);
     }
