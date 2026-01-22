@@ -27,19 +27,18 @@ public class Player extends MovableEntity {
 
     // אינטראקציה עם העולם / אובייקטים
     public void interact(String action) {
-        // דוגמה פשוטה
-        System.out.println(name + " performed action: " + action);
+
     }
 
     // טלפון
     public void openPhone() {
         phoneOpen = true;
-        System.out.println(name + " opened phone");
+
     }
 
     public void closePhone() {
         phoneOpen = false;
-        System.out.println(name + " closed phone");
+
     }
 
     public boolean isPhoneOpen() {
