@@ -72,7 +72,7 @@ public class PhoneUI {
         }
     }
 
-    /* ================= הודעות ================= */
+    /* ================ הודעות ================= */
 
     public void addMessage(String sender, String text) {
         player.addMessage(sender, text);
