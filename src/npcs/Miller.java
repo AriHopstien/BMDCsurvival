@@ -2,16 +2,16 @@ package npcs;
 
 import entities.NPC;
 import entities.Player;
-import hud.HUD;
+//import hud.HUD;
 import java.awt.image.BufferedImage;
 
 public class Miller extends NPC {
 
-    private HUD hud;
+    //private HUD hud;
 
-    public Miller(float x, float y, BufferedImage sprite, HUD hud) {
+    public Miller(float x, float y, BufferedImage sprite) {
         super(x, y, sprite);
-        this.hud = hud;
+        //this.hud = hud;
     }
 
     @Override
@@ -23,7 +23,7 @@ public class Miller extends NPC {
     // בדיקה אם השחקן במרחק ראיה בעת שימוש בטלפון
     public boolean seePlayerOnPhone(Player player) {
         if (player.isPhoneOpen() && canSee(player)) {
-            hud.showTopMessage("הרב מילר ראה אותך משתמש בטלפון!");
+            //hud.showTopMessage("הרב מילר ראה אותך משתמש בטלפון!");
             return true;
         }
         return false;

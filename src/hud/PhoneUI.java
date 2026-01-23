@@ -1,21 +1,29 @@
-package hud;
 
-import java.awt.*;
+package hud;
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 import java.util.List;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 
+//jh
 import entities.Player;
-import util.Assets;
 
 public class PhoneUI {
 
     private Player player;
 
+    private BufferedImage phoneIcon;
+
+
     private boolean open = false;
     private int selectedMessageIndex = 0;
 
+    private List<PhoneMessage> messages = new ArrayList<>();
     private int unreadCount = 0;
 
     // מיקום וגודל (יחסי למסך)
@@ -30,6 +38,13 @@ public class PhoneUI {
 
     public PhoneUI(Player player) {
         this.player = player;
+        try {
+            phoneIcon = ImageIO.read(
+                    getClass().getResource("hud/phon.png")
+            );
+        } catch (IOException | IllegalArgumentException e) {
+            e.printStackTrace();
+        }
     }
 
     /* ================= לוגיקה ================= */
@@ -54,9 +69,8 @@ public class PhoneUI {
 
         if (keyCode == KeyEvent.VK_DOWN) {
             selectedMessageIndex++;
-            List<PhoneMessage> msgs = player.getPhoneMessages();
-            if (selectedMessageIndex >= msgs.size()) {
-                selectedMessageIndex = msgs.size() - 1;
+            if (selectedMessageIndex >= messages.size()) {
+                selectedMessageIndex = messages.size() - 1;
             }
         }
     }
@@ -67,15 +81,16 @@ public class PhoneUI {
         open = !open;
         player.setPhoneOpen(open);
 
+
         if (open) {
             unreadCount = 0;
         }
     }
 
-    /* ================ הודעות ================= */
+    /* ================= הודעות ================= */
 
     public void addMessage(String sender, String text) {
-        player.addMessage(sender, text);
+        messages.add(new PhoneMessage(sender, text));
         unreadCount++;
     }
 
@@ -94,7 +109,9 @@ public class PhoneUI {
     }
 
     private void drawPhoneIcon(Graphics2D g) {
-        g.drawImage(Assets.phoneIcon, phoneIconX, phoneIconY, phoneIconSize, phoneIconSize, null);
+        if (phoneIcon != null) {
+            g.drawImage(phoneIcon, phoneIconX, phoneIconY, phoneIconSize, phoneIconSize, null);
+        }
 
         if (unreadCount > 0) {
             g.setColor(Color.RED);
@@ -119,9 +136,8 @@ public class PhoneUI {
         g.setFont(new Font("Arial", Font.BOLD, 18));
         g.drawString("הודעות", phoneWindowX + 20, phoneWindowY + 30);
 
-        List<PhoneMessage> msgs = player.getPhoneMessages();
-        if (!msgs.isEmpty()) {
-            PhoneMessage msg = msgs.get(selectedMessageIndex);
+        if (!messages.isEmpty()) {
+            PhoneMessage msg = messages.get(selectedMessageIndex);
 
             // שולח
             g.setFont(new Font("Arial", Font.BOLD, 14));
@@ -136,7 +152,9 @@ public class PhoneUI {
         } else {
             g.setFont(new Font("Arial", Font.PLAIN, 14));
             g.drawString("אין הודעות", phoneWindowX + 20, phoneWindowY + 80);
+            return;
         }
+
     }
 
     private void drawMultilineText(Graphics2D g, String text, int x, int y, int maxWidth) {
@@ -157,6 +175,18 @@ public class PhoneUI {
             }
         }
         g.drawString(line, x, y);
+    }
+
+    /* ================= מחלקה פנימית ================= */
+
+    private static class PhoneMessage {
+        String sender;
+        String text;
+
+        PhoneMessage(String sender, String text) {
+            this.sender = sender;
+            this.text = text;
+        }
     }
 
 }
