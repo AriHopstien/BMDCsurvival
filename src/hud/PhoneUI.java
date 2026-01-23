@@ -68,6 +68,7 @@ import util.Assets;
             open = !open;
             player.setPhoneOpen(open);
 
+
             if (open) {
                 unreadCount = 0;
             }
@@ -174,5 +175,6 @@ import util.Assets;
         }
 
     }
+
 
 
