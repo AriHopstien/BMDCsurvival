@@ -72,7 +72,7 @@ public class Map {
     };;
 
     public Map() {
-        tiles = new Tile[15];
+        tiles = new Tile[16];
         loadTileImages();
     }
 
