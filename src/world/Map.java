@@ -6,9 +6,9 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class Map {
-    public Tile[] tiles;
+    public static Tile[] tiles = new Tile[15];
 
-    public int[][] layout = {
+    public static int[][] layout = {
             {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
             {1, 3, 2, 2, 4, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
             {1, 3, 2, 2, 4, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
@@ -72,11 +72,12 @@ public class Map {
     };;
 
     public Map() {
-        tiles = new Tile[15];
-        loadTileImages();
+
+
     }
 
     private void setup(int index, String fileName, boolean walkable) {
+        loadTileImages();
         try {
             BufferedImage img = ImageIO.read(getClass().getResourceAsStream(fileName));
             tiles[index] = new Tile(img, walkable);
@@ -102,7 +103,7 @@ public class Map {
         setup(14, "bookShelf.png", false);
     }
 
-    public void draw(Graphics2D g2) {
+    public static void draw(Graphics2D g2) {
         int tileSize = 64;
 
         for (int row = 0; row < layout.length; row++) {

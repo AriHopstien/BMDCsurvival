@@ -49,8 +49,8 @@ public class GameScreen extends Screen {
     public void render(Graphics2D g) {
 
         // רקע
-        g.setColor(Color.DARK_GRAY);
-        g.fillRect(0, 0, 1280, 720);
+        //g.setColor(Color.DARK_GRAY);
+        //g.fillRect(0, 0, 1280, 720);
 
         // ציור עולם
          Map.draw(g);

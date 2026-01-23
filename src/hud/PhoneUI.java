@@ -1,3 +1,4 @@
+
 package hud;
 import java.awt.Color;
 import java.awt.Font;
@@ -20,175 +21,172 @@ public class PhoneUI {
 
 
     private boolean open = false;
-        private int selectedMessageIndex = 0;
+    private int selectedMessageIndex = 0;
 
-        private List<PhoneMessage> messages = new ArrayList<>();
-        private int unreadCount = 0;
+    private List<PhoneMessage> messages = new ArrayList<>();
+    private int unreadCount = 0;
 
-        // מיקום וגודל (יחסי למסך)
-        private final int phoneIconX = 760;
-        private final int phoneIconY = 520;
-        private final int phoneIconSize = 48;
+    // מיקום וגודל (יחסי למסך)
+    private final int phoneIconX = 760;
+    private final int phoneIconY = 520;
+    private final int phoneIconSize = 48;
 
-        private final int phoneWindowX = 200;
-        private final int phoneWindowY = 120;
-        private final int phoneWindowWidth = 400;
-        private final int phoneWindowHeight = 300;
+    private final int phoneWindowX = 200;
+    private final int phoneWindowY = 120;
+    private final int phoneWindowWidth = 400;
+    private final int phoneWindowHeight = 300;
 
-        public PhoneUI(Player player) {
-            this.player = player;
-            try {
-                phoneIcon = ImageIO.read(
-                        getClass().getResource("hud/phon.png")
-                );
-            } catch (IOException | IllegalArgumentException e) {
-                e.printStackTrace();
+    public PhoneUI(Player player) {
+        this.player = player;
+        try {
+            phoneIcon = ImageIO.read(
+                    getClass().getResource("hud/phon.png")
+            );
+        } catch (IOException | IllegalArgumentException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /* ================= לוגיקה ================= */
+
+    public void update(double deltaTime) {
+        // כרגע אין אנימציות
+    }
+
+    public void keyPressed(int keyCode) {
+        if (keyCode == KeyEvent.VK_P) {
+            toggle();
+        }
+
+        if (!open) return;
+
+        if (keyCode == KeyEvent.VK_UP) {
+            selectedMessageIndex--;
+            if (selectedMessageIndex < 0) {
+                selectedMessageIndex = 0;
             }
         }
 
-        /* ================= לוגיקה ================= */
-
-        public void update(double deltaTime) {
-            // כרגע אין אנימציות
-        }
-
-        public void keyPressed(int keyCode) {
-            if (keyCode == KeyEvent.VK_P) {
-                toggle();
-            }
-
-            if (!open) return;
-
-            if (keyCode == KeyEvent.VK_UP) {
-                selectedMessageIndex--;
-                if (selectedMessageIndex < 0) {
-                    selectedMessageIndex = 0;
-                }
-            }
-
-            if (keyCode == KeyEvent.VK_DOWN) {
-                selectedMessageIndex++;
-                if (selectedMessageIndex >= messages.size()) {
-                    selectedMessageIndex = messages.size() - 1;
-                }
+        if (keyCode == KeyEvent.VK_DOWN) {
+            selectedMessageIndex++;
+            if (selectedMessageIndex >= messages.size()) {
+                selectedMessageIndex = messages.size() - 1;
             }
         }
+    }
 
-        public void keyReleased(int keyCode) {}
+    public void keyReleased(int keyCode) {}
 
-        private void toggle() {
-            open = !open;
-            player.setPhoneOpen(open);
+    private void toggle() {
+        open = !open;
+        player.setPhoneOpen(open);
 
 
-            if (open) {
-                unreadCount = 0;
-            }
+        if (open) {
+            unreadCount = 0;
+        }
+    }
+
+    /* ================= הודעות ================= */
+
+    public void addMessage(String sender, String text) {
+        messages.add(new PhoneMessage(sender, text));
+        unreadCount++;
+    }
+
+    public boolean isOpen() {
+        return open;
+    }
+
+    /* ================= ציור ================= */
+
+    public void render(Graphics2D g) {
+        drawPhoneIcon(g);
+
+        if (open) {
+            drawPhoneWindow(g);
+        }
+    }
+
+    private void drawPhoneIcon(Graphics2D g) {
+        if (phoneIcon != null) {
+            g.drawImage(phoneIcon, phoneIconX, phoneIconY, phoneIconSize, phoneIconSize, null);
         }
 
-        /* ================= הודעות ================= */
+        if (unreadCount > 0) {
+            g.setColor(Color.RED);
+            g.fillOval(phoneIconX + phoneIconSize - 14, phoneIconY - 4, 18, 18);
 
-        public void addMessage(String sender, String text) {
-            messages.add(new PhoneMessage(sender, text));
-            unreadCount++;
-        }
-
-        public boolean isOpen() {
-            return open;
-        }
-
-        /* ================= ציור ================= */
-
-        public void render(Graphics2D g) {
-            drawPhoneIcon(g);
-
-            if (open) {
-                drawPhoneWindow(g);
-            }
-        }
-
-        private void drawPhoneIcon(Graphics2D g) {
-            if (phoneIcon != null) {
-                g.drawImage(phoneIcon, phoneIconX, phoneIconY, phoneIconSize, phoneIconSize, null);
-            }
-
-            if (unreadCount > 0) {
-                g.setColor(Color.RED);
-                g.fillOval(phoneIconX + phoneIconSize - 14, phoneIconY - 4, 18, 18);
-
-                g.setColor(Color.WHITE);
-                g.setFont(new Font("Arial", Font.BOLD, 12));
-                g.drawString(String.valueOf(unreadCount),
-                        phoneIconX + phoneIconSize - 9,
-                        phoneIconY + 10);
-            }
-        }
-
-        private void drawPhoneWindow(Graphics2D g) {
-            // רקע
-            g.setColor(new Color(20, 20, 20, 230));
-            g.fillRoundRect(phoneWindowX, phoneWindowY,
-                    phoneWindowWidth, phoneWindowHeight, 20, 20);
-
-            // כותרת
             g.setColor(Color.WHITE);
-            g.setFont(new Font("Arial", Font.BOLD, 18));
-            g.drawString("הודעות", phoneWindowX + 20, phoneWindowY + 30);
-
-            if (!messages.isEmpty()) {
-                PhoneMessage msg = messages.get(selectedMessageIndex);
-
-                // שולח
-                g.setFont(new Font("Arial", Font.BOLD, 14));
-                g.drawString(msg.sender, phoneWindowX + 20, phoneWindowY + 70);
-
-                // תוכן
-                g.setFont(new Font("Arial", Font.PLAIN, 14));
-                drawMultilineText(g, msg.text,
-                        phoneWindowX + 20,
-                        phoneWindowY + 95,
-                        phoneWindowWidth - 40);
-            } else {
-                g.setFont(new Font("Arial", Font.PLAIN, 14));
-                g.drawString("אין הודעות", phoneWindowX + 20, phoneWindowY + 80);
-                return;
-            }
-
+            g.setFont(new Font("Arial", Font.BOLD, 12));
+            g.drawString(String.valueOf(unreadCount),
+                    phoneIconX + phoneIconSize - 9,
+                    phoneIconY + 10);
         }
+    }
 
-        private void drawMultilineText(Graphics2D g, String text, int x, int y, int maxWidth) {
-            String[] words = text.split(" ");
-            String line = "";
-            int lineHeight = g.getFontMetrics().getHeight();
+    private void drawPhoneWindow(Graphics2D g) {
+        // רקע
+        g.setColor(new Color(20, 20, 20, 230));
+        g.fillRoundRect(phoneWindowX, phoneWindowY,
+                phoneWindowWidth, phoneWindowHeight, 20, 20);
 
-            for (String word : words) {
-                String testLine = line + word + " ";
-                int lineWidth = g.getFontMetrics().stringWidth(testLine);
+        // כותרת
+        g.setColor(Color.WHITE);
+        g.setFont(new Font("Arial", Font.BOLD, 18));
+        g.drawString("הודעות", phoneWindowX + 20, phoneWindowY + 30);
 
-                if (lineWidth > maxWidth) {
-                    g.drawString(line, x, y);
-                    line = word + " ";
-                    y += lineHeight;
-                } else {
-                    line = testLine;
-                }
-            }
-            g.drawString(line, x, y);
-        }
+        if (!messages.isEmpty()) {
+            PhoneMessage msg = messages.get(selectedMessageIndex);
 
-        /* ================= מחלקה פנימית ================= */
+            // שולח
+            g.setFont(new Font("Arial", Font.BOLD, 14));
+            g.drawString(msg.sender, phoneWindowX + 20, phoneWindowY + 70);
 
-        private static class PhoneMessage {
-            String sender;
-            String text;
-
-            PhoneMessage(String sender, String text) {
-                this.sender = sender;
-                this.text = text;
-            }
+            // תוכן
+            g.setFont(new Font("Arial", Font.PLAIN, 14));
+            drawMultilineText(g, msg.text,
+                    phoneWindowX + 20,
+                    phoneWindowY + 95,
+                    phoneWindowWidth - 40);
+        } else {
+            g.setFont(new Font("Arial", Font.PLAIN, 14));
+            g.drawString("אין הודעות", phoneWindowX + 20, phoneWindowY + 80);
+            return;
         }
 
     }
 
+    private void drawMultilineText(Graphics2D g, String text, int x, int y, int maxWidth) {
+        String[] words = text.split(" ");
+        String line = "";
+        int lineHeight = g.getFontMetrics().getHeight();
 
+        for (String word : words) {
+            String testLine = line + word + " ";
+            int lineWidth = g.getFontMetrics().stringWidth(testLine);
 
+            if (lineWidth > maxWidth) {
+                g.drawString(line, x, y);
+                line = word + " ";
+                y += lineHeight;
+            } else {
+                line = testLine;
+            }
+        }
+        g.drawString(line, x, y);
+    }
+
+    /* ================= מחלקה פנימית ================= */
+
+    private static class PhoneMessage {
+        String sender;
+        String text;
+
+        PhoneMessage(String sender, String text) {
+            this.sender = sender;
+            this.text = text;
+        }
+    }
+
+}
