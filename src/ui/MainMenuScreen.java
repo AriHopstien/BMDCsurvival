@@ -118,7 +118,7 @@ public class MainMenuScreen extends Screen {
         // כניסה למסך הבא רק כש-ENTER נלחץ
         if (input.ENTER_key && canPressEnter()) {
             if (selectedButton == 0) {
-                // game.setScreen(new GameScreen(game, input));
+                game.setScreen(new GameScreen(game, input));
             } else if (selectedButton == 1) {
                 game.setScreen(new ExplanationScreen(game, input));
             }
