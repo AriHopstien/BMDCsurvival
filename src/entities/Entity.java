@@ -5,7 +5,7 @@ import java.awt.image.BufferedImage;
 public class Entity {
     protected float x, y;
     int width, height;
-    BufferedImage sprite;
+    public BufferedImage sprite;
     Rectangle bounds;
     public Entity(float x, float y, BufferedImage sprite) {
         this.x = x;
