@@ -1,4 +1,37 @@
+
 package ui;
 
-public class Screen {
+import java.awt.Graphics2D;
+import engine.InputManager;
+
+public abstract class Screen {
+
+    protected InputManager input;
+
+    protected double enterLockTimer = 0;
+
+    public Screen(InputManager input) {
+        this.input = input;
+    }
+
+    public void onEnter() {
+        enterLockTimer = 0.4; // חצי שנייה חסימה (אפשר 0.2–0.4)
+    }
+
+    public void onExit() {
+    }
+
+    public void update(double deltaTime) {
+        if (enterLockTimer > 0) {
+            enterLockTimer -= deltaTime;
+        }
+    }
+
+    protected boolean canPressEnter() {
+        return enterLockTimer <= 0;
+    }
+
+    public abstract void render(Graphics2D g);
+
+    public void handleInput(InputManager input) {};
 }

@@ -3,24 +3,18 @@ package ai;
 import entities.NPC;
 import world.GameWorld;
 
-/**
- * מחלקת בסיס לכל AI.
- * כל סוג AI (Patrol/Chase) יורש ממנה.
- */
 public abstract class AIcontroller {
 
-    /**
-     * update – מתודה שמעדכנת את ה-AI
-     * @param npc - ה-NPC שעליו ה-AI פועל
-     * @param world - העולם (לבדיקה של גבולות או מחסומים)
-     *
-     * ⚠️ כאן אני מניח ש-NPC מכיל שדה או getter למיקום שלו
-     * (כמו npc.position או npc.getPosition())
-     */
+    protected String type; // לצורך זיהוי סוג AI
+
+    public AIcontroller(String type) {
+        this.type = type;
+    }
+
+    // הפונקציה העיקרית: מחליטה מה ה-NPC יעשה בפריים הזה
     public abstract void update(NPC npc, GameWorld world);
 
-    /**
-     * מחזיר סוג ה-AI כ-string
-     */
-    public abstract String getType();
+    public String getType() {
+        return type;
+    }
 }

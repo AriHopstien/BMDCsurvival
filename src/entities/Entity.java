@@ -3,7 +3,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public class Entity {
-    float x, y;
+    protected float x, y;
     int width, height;
     BufferedImage sprite;
     Rectangle bounds;

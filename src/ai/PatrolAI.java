@@ -5,49 +5,44 @@ import world.GameWorld;
 import util.Vactor2;
 import java.util.List;
 
-/**
- * PatrolAI – מזיז את ה-NPC בין נקודות waypoints
- */
 public class PatrolAI extends AIcontroller {
 
-    private List<Vactor2> waypoints; // רשימת נקודות לחיזור
-    private int currentIndex = 0;     // הנקודה הנוכחית
+    private List<Vactor2> waypoints;
+    private int currentWaypoint = 0;
 
     public PatrolAI(List<Vactor2> waypoints) {
+        super("Patrol");
         this.waypoints = waypoints;
     }
 
-    /**
-     * update – מזיז את ה-NPC לעבר ה-waypoint הנוכחי
-     * @param npc - NPC ספציפי מ-npcs/
-     * @param world - העולם, לבדוק גבולות
-     * ⚠️ כאן אני מניח של-NPC יש:
-     *      - npc.position או npc.getPosition()
-     *      - npc.move(Vector2 direction)
-     */
     @Override
     public void update(NPC npc, GameWorld world) {
         if (waypoints.isEmpty()) return;
 
-        Vactor2 target = waypoints.get(currentIndex);
-        Vactor2 direction = target.subtract(npc.getPosition()).normalize(); // חישוב כיוון
-        npc.move(direction); // מזיז את ה-NPC
+        Vactor2 target = waypoints.get(currentWaypoint);
 
-        // בדיקה אם הגיע ל-waypoint
-        if (npc.getPosition().distance(target) < 0.1f) {
-            currentIndex = (currentIndex + 1) % waypoints.size();
+        // לחשב כיוון פשוט
+        float dx = target.x - npc.getX();
+        float dy = target.y - npc.getY();
+
+        float distanceSquared = dx * dx + dy * dy;
+
+        if (distanceSquared < 4) { // הגיע ל-waypoint
+            currentWaypoint = (currentWaypoint + 1) % waypoints.size();
+            target = waypoints.get(currentWaypoint);
+            dx = target.x - npc.getX();
+            dy = target.y - npc.getY();
+        }
+
+        // normalized direction
+        float length = (float) Math.sqrt(dx * dx + dy * dy);
+        if (length != 0) {
+            npc.setDx(dx / length);
+            npc.setDy(dy / length);
+        } else {
+            npc.setDx(0);
+            npc.setDy(0);
         }
     }
-
-    @Override
-    public String getType() {
-        return "Patrol";
-    }
-
-    /**
-     * loop – מחזיר את ה-waypoint הבא, שימושי למעקב
-     */
-    public Vactor2 loop() {
-        return waypoints.get(currentIndex);
-    }
 }
+//hello
