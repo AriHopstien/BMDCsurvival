@@ -46,7 +46,6 @@ public class PhoneUI {
             }
         }
 
-        /* ================= לוגיקה ================= */
 
         public void update(double deltaTime) {
             // כרגע אין אנימציות
