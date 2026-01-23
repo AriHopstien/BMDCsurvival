@@ -10,6 +10,7 @@ public class GameScreen extends Screen {
 
     private Game game;
     private InputManager input;
+    private Map map = new Map();
 
     // בהמשך תכניס פה:
     // GameWorld world;
@@ -53,7 +54,7 @@ public class GameScreen extends Screen {
         //g.fillRect(0, 0, 1280, 720);
 
         // ציור עולם
-         Map.draw(g);
+         this.map.draw(g);
 
         // ציור דמויות
         // player.render(g);

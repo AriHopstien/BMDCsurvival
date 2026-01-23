@@ -72,12 +72,10 @@ public class Map {
     };;
 
     public Map() {
-
-
+        loadTileImages();
     }
 
     private void setup(int index, String fileName, boolean walkable) {
-        loadTileImages();
         try {
             BufferedImage img = ImageIO.read(getClass().getResourceAsStream(fileName));
             tiles[index] = new Tile(img, walkable);
