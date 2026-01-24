@@ -22,7 +22,7 @@ public class GameScreen extends Screen {
 
     public GameScreen(Game game, InputManager input) {
         super(input); // קריאה לבנאי של Screen
-        this.player = new Player(100,100);
+        this.player = new Player(500,500);
         this.world = new GameWorld(player);
         this.hud = new HUD(player);
         this.camera = new Camera(screenWidth, screenHeight);

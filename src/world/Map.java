@@ -2,6 +2,7 @@ package world;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
+import javax.swing.*;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -70,7 +71,6 @@ public class Map {
             {1, 3, 2, 2, 4, 1, 7, 1, 1, 0, 0,10,11, 0, 0, 0, 0, 0, 0, 0, 9, 1, 7, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 1, 7, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 1},
             {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ,1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
     };
-
     public Map() {
         tiles = new Tile[19];
         loadTileImages();
@@ -86,37 +86,46 @@ public class Map {
     }
     private void loadTileImages(){
         setup(0, "floor.png", true);
-        setup(1, "wall.png", false);
+        setup(1, "wall.png", true);
         setup(2, "road.png", true);
         setup(3, "road.left.png", true);
         setup(4, "road.right.png", true);
         setup(5, "door.front.png", true);
         setup(6, "door.left_right.png", true);
-        setup(7, "toilet.png", false);
-        setup(8, "topBed.png", false);
-        setup(9, "bottomBed.png", false);
-        setup(10, "table.left.png", false);
-        setup(11, "table.right.png", false);
-        setup(12, "closet.back.png", false);
-        setup(13, "closet.front.topBed.png", false);
-        setup(14, "bookShelf.png", false);
-        setup(15, "bookShelf.reversed.png", false);
-        setup(16, "new,table,left.png", false);
-        setup(17, "new,table,right.png", false);
-        setup(18, "new,table,middle.png", false);
+        setup(7, "toilet.png", true);
+        setup(8, "topBed.png", true);
+        setup(9, "bottomBed.png", true);
+        setup(12, "closet.back.png", true);
+        setup(13, "closet.front.png", true);
+        setup(14, "bookShelf.png", true);
+        setup(15, "bookShelf.reverse.png", true);
+        setup(16, "new.table.left.png", false);
+        setup(17, "new.table.right.png", false);
+        setup(18, "new.table.middle.png", false);
     }
 
-    public void draw(Graphics2D g2, float cameraX, float cameraY) {
-        int tileSize = 64;
-        for (int row = 0; row < layout.length; row++) {
-            for (int col = 0; col < layout[row].length; col++) {
-                int tileIndex = layout[row][col];
-                if (tiles[tileIndex] != null) {
-                    // חישוב המיקום ביחס למצלמה
-                    int screenX = (int) (col * tileSize - cameraX);
-                    int screenY = (int) (row * tileSize - cameraY);
 
-                    g2.drawImage(tiles[tileIndex].getImage(), screenX, screenY, tileSize, tileSize, null);
+
+    public void draw(Graphics2D g2, float cameraX, float cameraY) {
+        // 1. חישוב טווח העמודות והשורות שבאמת רואים על המסך
+        // Math.max ו-Math.min שומרים עלינו שלא נחרוג מגבולות המערך
+
+        int startCol = Math.max(0, (int) (cameraX / 64));
+        int endCol = Math.min(layout[0].length - 1, (int) ((cameraX + 1280) / 64) + 1);
+
+        int startRow = Math.max(0, (int) (cameraY / 64));
+        int endRow = Math.min(layout.length - 1, (int) ((cameraY + 720) / 64) + 1);
+
+        // 2. לולאה רק על הטווח הרלוונטי
+        for (int row = startRow; row <= endRow; row++) {
+            for (int col = startCol; col <= endCol; col++) {
+
+                int worldX = col * 64;
+                int worldY = row * 64;
+                int tileIndex = layout[row][col];
+
+                if (tileIndex >= 0 && tileIndex < tiles.length && tiles[tileIndex] != null) {
+                    g2.drawImage(tiles[tileIndex].getImage(), worldX, worldY, 64, 64, null);
                 }
             }
         }
