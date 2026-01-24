@@ -22,7 +22,7 @@ public class GameScreen extends Screen {
 
     public GameScreen(Game game, InputManager input) {
         super(input); // קריאה לבנאי של Screen
-        this.player = new Player(500,500);
+        this.player = new Player(100,100);
         this.world = new GameWorld(player);
         this.hud = new HUD(player);
         this.camera = new Camera(screenWidth, screenHeight);
@@ -55,7 +55,7 @@ public class GameScreen extends Screen {
         // הזזת נקודת הציור לפי מיקום המצלמה
         g.translate(-camera.getX(), -camera.getY());
 
-        world.render(g);
+        world.render(g,camera);
 
         // החזרת הגרפיקה למצב "סטטי" כדי שה-UI לא יזוז עם המצלמה
         g.setTransform(oldTransform);

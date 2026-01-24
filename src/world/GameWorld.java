@@ -1,5 +1,6 @@
 package world;
 
+import engine.Camera;
 import entities.Player;
 import entities.NPC;
 import engine.InputManager;
@@ -37,26 +38,43 @@ public class GameWorld {
     }
 
     private void handlePlayerMovement(double deltaTime) {
-        float speed = player.getSpeed();
         float dx = player.getDx();
         float dy = player.getDy();
+        float speed = player.getSpeed();
 
-        // --- בדיקת ציר X ---
+        if (dx == 0 && dy == 0) return;
+
+        // 1. חישוב גבולות המפה בפיקסלים
+        // layout[0].length זה מספר העמודות, layout.length זה מספר השורות
+        int maxWorldX = map.layout[0].length * 64;
+        int maxWorldY = map.layout.length * 64;
+
+        float stepX = dx * speed * (float) deltaTime;
+        float stepY = dy * speed * (float) deltaTime;
+
+        // --- ציר X ---
         if (dx != 0) {
-            float nextX = player.getX() + (dx * speed * (float) deltaTime);
-            // יצירת היטבוקס עתידי לבדיקה
-            Rect futureHitboxX = new Rect(nextX, player.getY(), player.getWidth(), player.getHeight());
+            float nextX = player.getX() + stepX;
 
+            // חסימה קשיחה: מונע מה-X לרדת מ-0 או לעבור את רוחב המפה
+            if (nextX < 0) nextX = 0;
+            if (nextX + player.getWidth() > maxWorldX) nextX = maxWorldX - player.getWidth();
+
+            Rect futureHitboxX = new Rect(nextX, player.getY(), player.getWidth(), player.getHeight());
             if (canMoveTo(futureHitboxX)) {
                 player.setX(nextX);
             }
         }
 
-        // --- בדיקת ציר Y ---
+        // --- ציר Y ---
         if (dy != 0) {
-            float nextY = player.getY() + (dy * speed * (float) deltaTime);
-            Rect futureHitboxY = new Rect(player.getX(), nextY, player.getWidth(), player.getHeight());
+            float nextY = player.getY() + stepY;
 
+            // חסימה קשיחה: מונע מה-Y לרדת מ-0 או לעבור את גובה המפה
+            if (nextY < 0) nextY = 0;
+            if (nextY + player.getHeight() > maxWorldY) nextY = maxWorldY - player.getHeight();
+
+            Rect futureHitboxY = new Rect(player.getX(), nextY, player.getWidth(), player.getHeight());
             if (canMoveTo(futureHitboxY)) {
                 player.setY(nextY);
             }
@@ -64,9 +82,8 @@ public class GameWorld {
     }
 
     public boolean canMoveTo(Rect hitbox) {
-        // בדיקת 4 הפינות של ה-Hitbox מול ה-Tiles במפה
-        // הוספנו "Padding" קטן של 5 פיקסלים כדי שההתנגשות תרגיש פחות "צפופה"
-        float padding = 5;
+
+        float padding = 8;
 
         return isWalkable(hitbox.getLeft() + padding, hitbox.getTop() + (hitbox.size.y / 2)) && // אמצע שמאל
                 isWalkable(hitbox.getRight() - padding, hitbox.getTop() + (hitbox.size.y / 2)) && // אמצע ימין
@@ -87,9 +104,9 @@ public class GameWorld {
         return map.tiles[tileIndex].isWalkable();
     }
 
-    public void render(Graphics2D g) {
+    public void render(Graphics2D g , Camera camera) {
         // 1. המפה (תמיד ראשונה)
-        map.draw(g);
+        map.draw(g, camera.getX(), camera.getY());
         // 2. דמויות (NPCs)
         for (NPC npc : npcs) {
             npc.Render(g);

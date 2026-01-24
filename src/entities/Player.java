@@ -74,14 +74,9 @@ public class Player extends MovableEntity {
     public void update(InputManager input,Screen currentScreen) { // הוספנו את המסך כפרמטר
         if (!phoneOpen) {
             handleMovement(input);
-            move(deltaTime);
+            //move(deltaTime);
             updateAnimation();
         }
-        //} else {
-        //            this.dx = 0;
-        //            this.dy = 0;
-        //        }
-
         // בדיקה האם ENTER לחוץ וגם האם עבר מספיק זמן מאז הלחיצה האחרונה
         if (input.ENTER_key && currentScreen.canPressEnter()) {
             togglePhone();

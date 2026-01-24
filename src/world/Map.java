@@ -12,7 +12,7 @@ public class Map {
     public int[][] layout = {
             {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
             {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-            {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+            {1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
             {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
             {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
             {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
@@ -86,8 +86,8 @@ public class Map {
         }
     }
     private void loadTileImages(){
-        setup(0, "floor.png", true);
-        setup(1, "wall.png", false);
+        setup(0, "floor.png", false);
+        setup(1, "wall.png", true);
     }
     //setup(2, "road.png", true);
     //        setup(3, "road.left.png", true);
@@ -106,18 +106,25 @@ public class Map {
     //        setup(18, "new,table,middle.png", false);
 
 
-    public void draw(Graphics2D g2) {
-        for (int row = 0; row < layout.length; row++) {
-            for (int col = 0; col < layout[row].length; col++) {
+    public void draw(Graphics2D g2, float cameraX, float cameraY) {
+        // 1. חישוב טווח העמודות והשורות שבאמת רואים על המסך
+        // Math.max ו-Math.min שומרים עלינו שלא נחרוג מגבולות המערך
 
-                // המיקום האמיתי של האריח בעולם המשחק
+        int startCol = Math.max(0, (int) (cameraX / 64));
+        int endCol = Math.min(layout[0].length - 1, (int) ((cameraX + 1280) / 64) + 1);
+
+        int startRow = Math.max(0, (int) (cameraY / 64));
+        int endRow = Math.min(layout.length - 1, (int) ((cameraY + 720) / 64) + 1);
+
+        // 2. לולאה רק על הטווח הרלוונטי
+        for (int row = startRow; row <= endRow; row++) {
+            for (int col = startCol; col <= endCol; col++) {
+
                 int worldX = col * 64;
                 int worldY = row * 64;
-
                 int tileIndex = layout[row][col];
 
                 if (tileIndex >= 0 && tileIndex < tiles.length && tiles[tileIndex] != null) {
-                    // שימוש ב-worldX ו-worldY במקום בחישוב הישיר
                     g2.drawImage(tiles[tileIndex].getImage(), worldX, worldY, 64, 64, null);
                 }
             }
