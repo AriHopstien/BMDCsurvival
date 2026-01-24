@@ -4,30 +4,24 @@ import entities.NPC;
 import entities.Player;
 import world.GameWorld;
 
-public class ChaseAI extends AIcontroller {
+public class ChaseAI implements MovementAI {
 
-    private Player targetPlayer;
+    private final Player target;
 
-    public ChaseAI(Player player) {
-        super("Chase");
-        this.targetPlayer = player;
+    public ChaseAI(Player target) {
+        this.target = target;
     }
 
     @Override
     public void update(NPC npc, GameWorld world) {
-        if (targetPlayer == null) return;
-
-        float dx = targetPlayer.getX() - npc.getX();
-        float dy = targetPlayer.getY() - npc.getY();
-
-        float length = (float) Math.sqrt(dx * dx + dy * dy);
-        if (length != 0) {
-            npc.setDx(dx / length);
-            npc.setDy(dy / length);
-        } else {
-            npc.setDx(0);
-            npc.setDy(0);
+        if (target == null) {
+            npc.stop();
+            return;
         }
+
+        float dx = target.getX() - npc.getX();
+        float dy = target.getY() - npc.getY();
+
+        npc.moveTowards(dx, dy);
     }
 }
-//hello

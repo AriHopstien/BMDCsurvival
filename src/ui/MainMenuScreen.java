@@ -1,6 +1,7 @@
 
 package ui;
 
+import ui.GameScreen;
 import engine.InputManager;
 import main.Game;
 
@@ -15,6 +16,8 @@ public class MainMenuScreen extends Screen {
     private String title;
 
     private int selectedButton;
+
+    private long enterDelayStartTime;
 
     // מיקומים (אפשר לשנות לפי הרזולוציה שלכם)
     private int screenWidth = 1280;
@@ -34,7 +37,8 @@ public class MainMenuScreen extends Screen {
 
     @Override
     public void onEnter() {
-        super.onEnter(); // חשוב!
+        super.onEnter();
+        enterDelayStartTime = System.currentTimeMillis();
 
         title = "BMDC - survival";
         selectedButton = 0;
@@ -115,7 +119,9 @@ public class MainMenuScreen extends Screen {
         if (input.S_Key && selectedButton < 1) {
             selectedButton++;  // עלה לכפתור אחד למטה
         }
-        // כניסה למסך הבא רק כש-ENTER נלחץ
+        if (System.currentTimeMillis() - enterDelayStartTime < 500) {
+            return;
+        }
         if (input.ENTER_key && canPressEnter()) {
             if (selectedButton == 0) {
                 game.setScreen(new GameScreen(game, input));

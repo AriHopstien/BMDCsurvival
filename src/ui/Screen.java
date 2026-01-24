@@ -26,7 +26,11 @@ public abstract class Screen {
         }
     }
 
-    protected boolean canPressEnter() {
+    public void resetEnterTimer() {
+        this.enterLockTimer = 0.1; // חצי שנייה של חסימה
+    }
+
+    public boolean canPressEnter() {
         return enterLockTimer <= 0;
     }
 

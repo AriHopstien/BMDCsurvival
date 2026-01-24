@@ -3,6 +3,8 @@ package npcs;
 import entities.NPC;
 import entities.Player;
 import hud.HUD;
+import world.GameWorld;
+
 import java.awt.image.BufferedImage;
 
 public class Kroyzer extends NPC {
@@ -15,10 +17,8 @@ public class Kroyzer extends NPC {
         this.hud = hud;
     }
 
-    @Override
-    public void update() {
-        super.update();
-        // אם chasing = true, זז אחרי השחקן
+    public void update(GameWorld world) {
+        super.update(world);
     }
 
     // התחלת רדיפה אחרי השחקן

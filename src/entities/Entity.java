@@ -4,14 +4,13 @@ import java.awt.image.BufferedImage;
 
 public class Entity {
     protected float x, y;
-    int width, height;
+    protected static  int width = 64;
+    protected static  int height = 64;
     public BufferedImage sprite;
     Rectangle bounds;
     public Entity(float x, float y, BufferedImage sprite) {
         this.x = x;
         this.y = y;
-        this.width = 64;
-        this.height = 64;
         this.sprite = sprite;
         bounds = new Rectangle(0,0 ,width, height);
     }

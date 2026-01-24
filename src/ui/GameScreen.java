@@ -2,70 +2,70 @@ package ui;
 
 import engine.InputManager;
 import main.Game;
-import world.Map;
-
-import java.awt.*;
+import ui.Screen;
+import entities.Player;
+import hud.HUD;
+import world.GameWorld;
+import engine.Camera;
+import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
 
 public class GameScreen extends Screen {
 
-    private Game game;
-    private InputManager input;
-    private Map map = new Map();
+    private GameWorld world;
+    private Player player;
+    private HUD hud;
+    private Camera camera;
 
-    // בהמשך תכניס פה:
-    // GameWorld world;
-    // Player player;
-    // HUD hud;
+    private final int screenWidth = 1280;
+    private final int screenHeight = 720;
 
     public GameScreen(Game game, InputManager input) {
-        super(input);
-        this.game = game;
-
-        // initWorld();
-        // initPlayer();
-        // initNPCs();
+        super(input); // קריאה לבנאי של Screen
+        this.player = new Player(500,500);
+        this.world = new GameWorld(player);
+        this.hud = new HUD(player);
+        this.camera = new Camera(screenWidth, screenHeight);
     }
 
     @Override
     public void onEnter() {
-        // קורה פעם אחת כשנכנסים למשחק
-        // למשל: מוזיקה, אתחול טיימרים
+        super.onEnter(); // מפעיל את הטימר לחסימת מקשים בכניסה
+        // כאן אפשר להוסיף מוזיקת רקע או אתחול ספציפי לשלב
     }
 
+    // בתוך GameScreen
     @Override
     public void update(double deltaTime) {
-        // world.update(deltaTime);
-        // player.update(deltaTime);
-        // npc.update(deltaTime);
-    }
+        super.update(deltaTime); // מעדכן את ה-enterLockTimer
 
-
-
-    @Override
-    public void handleInput(InputManager input) {
-        // player.handleInput(input);
+        // מעבירים את ה-this (המסך) כדי שהשחקן יוכל לבדוק canPressEnter()
+        world.update(deltaTime, input, this);
+        camera.update(player);
+        hud.handleInput(input);
+        hud.update(deltaTime);
     }
 
     @Override
     public void render(Graphics2D g) {
+        // שמירת המצב המקורי של הגרפיקה (לפני הזזת המצלמה)
+        AffineTransform oldTransform = g.getTransform();
 
-        // רקע
-        //g.setColor(Color.DARK_GRAY);
-        //g.fillRect(0, 0, 1280, 720);
+        // --- שכבת העולם (מושפעת מהמצלמה) ---
+        // הזזת נקודת הציור לפי מיקום המצלמה
+        g.translate(-camera.getX(), -camera.getY());
 
-        // ציור עולם
-         this.map.draw(g);
+        world.render(g);
 
-        // ציור דמויות
-        // player.render(g);
-        // npc.render(g);
+        // החזרת הגרפיקה למצב "סטטי" כדי שה-UI לא יזוז עם המצלמה
+        g.setTransform(oldTransform);
 
-        // HUD
-        // hud.render(g);
+        // --- שכבת ה-HUD (קבועה על המסך) ---
+        hud.render(g);
     }
 
     @Override
-    public void onExit() {
-        // ניקוי / עצירת סאונדים
+    public void handleInput(InputManager input) {
+        if (input.ENTER_key) {}
     }
 }

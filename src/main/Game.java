@@ -1,7 +1,7 @@
-
 package main;
 
 import engine.InputManager;
+import engine.Time;
 import ui.Screen;
 import ui.MainMenuScreen;
 
@@ -10,34 +10,41 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Color;
+import java.awt.event.KeyEvent;
 
+/**
+ * מחלקת המשחק המרכזית - מנהלת את ה-Loop ואת החלפת המסכים
+ */
 public class Game extends JPanel implements Runnable {
 
     private Thread gameThread;
     private boolean running = false;
 
-    public InputManager input;
-
+    private InputManager input;
     private Screen currentScreen;
 
-    private final int WIDTH = 1280;
-    private final int HEIGHT = 720;
+    // רזולוציה קבועה
+    public final int WIDTH = 1280;
+    public final int HEIGHT = 720;
 
     public Game() {
-        input = new InputManager();
-        addKeyListener(input);
-        setPreferredSize(new Dimension(WIDTH, HEIGHT));
-        setScreen(new MainMenuScreen(this,input));
-        setFocusable(true);
-        requestFocus();
+        this.input = new InputManager();
+
+        // הגדרות ה-Panel
+        this.setPreferredSize(new Dimension(WIDTH, HEIGHT));
+        this.setBackground(Color.BLACK);
+        this.setDoubleBuffered(true);
+        this.addKeyListener(input);
+        this.setFocusable(true);
+        this.requestFocus();
+
+        // הגדרת מסך הפתיחה
+        setScreen(new MainMenuScreen(this, input));
     }
 
-    public void start() {
-        running = true;
-        gameThread = new Thread(this);
-        gameThread.start();
-    }
-
+    /**
+     * פונקציה למעבר בין מסכים - קוראת ל-onExit של הישן ו-onEnter של החדש
+     */
     public void setScreen(Screen newScreen) {
         if (currentScreen != null) {
             currentScreen.onExit();
@@ -46,29 +53,45 @@ public class Game extends JPanel implements Runnable {
         currentScreen.onEnter();
     }
 
+    public void start() {
+        if (running) return;
+        running = true;
+        gameThread = new Thread(this);
+        gameThread.start();
+    }
+
     @Override
     public void run() {
+        // Game Loop מבוסס זמן (60 FPS)
+        double drawInterval = 1000000000.0 / 60.0;
+        double delta = 0;
         long lastTime = System.nanoTime();
-        double nsPerUpdate = 1_000_000_000.0 / 60.0;
+        long currentTime;
 
-        while (running) {
-            long now = System.nanoTime();
-            double delta = (now - lastTime) / nsPerUpdate;
-            lastTime = now;
+        while (gameThread != null && running) {
+            currentTime = System.nanoTime();
+            delta += (currentTime - lastTime) / drawInterval;
+            lastTime = currentTime;
+            if (delta >= 1) {
+                // 1. קודם כל מעדכנים את הזמן הגלובלי
+                Time.deltaTime = 1.0 / 60.0;
 
-            update(delta);
-            repaint();
+                // 2. קוראים ל-update פעם אחת בלבד
+                // ה-update הזה כבר יפעיל את player.update() שבסוף יפעיל את move()
+                update(Time.deltaTime);
 
-            try {
-                Thread.sleep(16); // ~60 FPS
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+                // 3. מציירים
+                repaint();
+
+                delta--;
             }
         }
     }
 
     private void update(double deltaTime) {
+        // 1. עדכון מצב המקשים ב-InputManager
         input.update();
+        // 2. עדכון המסך הנוכחי (לוגיקה וקלט)
         if (currentScreen != null) {
             currentScreen.update(deltaTime);
             currentScreen.handleInput(input);
@@ -80,12 +103,11 @@ public class Game extends JPanel implements Runnable {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
 
-        g2.setColor(Color.BLACK);
-        g2.fillRect(0, 0, WIDTH, HEIGHT);
-
+        // ציור המסך הנוכחי
         if (currentScreen != null) {
             currentScreen.render(g2);
         }
+
+        g2.dispose();
     }
 }
-

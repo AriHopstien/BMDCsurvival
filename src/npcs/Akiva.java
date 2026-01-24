@@ -1,8 +1,9 @@
 package npcs;
-
 import entities.NPC;
 import entities.Player;
 import hud.HUD;
+import world.GameWorld;
+
 import java.awt.image.BufferedImage;
 
 public class Akiva extends NPC {
@@ -15,10 +16,8 @@ public class Akiva extends NPC {
         this.hud = hud;
     }
 
-    @Override
-    public void update() {
-        super.update();
-        // כאן נוסיף לוגיקה שתסתובב הלוך חזור אחרי החלב
+    public void update(GameWorld world) {
+        super.update(world);
     }
 
     // בדיקה אם השחקן נגע בחלב מבלי להסתיר

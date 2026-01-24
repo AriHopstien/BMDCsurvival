@@ -2,6 +2,7 @@ package npcs;
 
 import entities.NPC;
 import entities.Player;
+import world.GameWorld;
 
 import javax.imageio.ImageIO;
 import java.awt.Graphics;
@@ -21,8 +22,8 @@ public class Miller extends NPC {
     private double animSpeed = 0.25;         // כל כמה שניות להחליף פריים
 
     // ================= חיתוך =================
-    private static final int FRAME_W = 64;
-    private static final int FRAME_H = 64;
+    private static final int FRAME_W = width;
+    private static final int FRAME_H = height;
 
     public Miller(float x, float y) {
         super(x, y, null);
@@ -55,8 +56,8 @@ public class Miller extends NPC {
     }
 
     @Override
-    public void update() {
-        super.update();
+    public void update(GameWorld world) {
+        super.update(world);
 
         // קובע איזה כיוון לפי dx/dy (שהוגדר מבחוץ)
         BufferedImage activeSheet = frontSheet;
