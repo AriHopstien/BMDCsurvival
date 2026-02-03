@@ -4,9 +4,6 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 public class MassageBoxTop {
 
-
-
-
         private String text = "";
         private boolean visible = false;
 

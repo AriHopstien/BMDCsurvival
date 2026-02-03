@@ -2,7 +2,6 @@ package ui;
 
 import engine.InputManager;
 import main.Game;
-import ui.Screen;
 import entities.Player;
 import hud.HUD;
 import world.GameWorld;
@@ -17,55 +16,56 @@ public class GameScreen extends Screen {
     private HUD hud;
     private Camera camera;
 
+    // נשאיר אותם כמשתנים פשוטים, נאתחל אותם בבנאי
+    private int worldWidth;
+    private int worldHeight;
+
     private final int screenWidth = 1280;
     private final int screenHeight = 720;
 
     public GameScreen(Game game, InputManager input) {
-        super(input); // קריאה לבנאי של Screen
-        this.player = new Player(500,500);
+        super(input);
+
+        // 1. קודם כל יוצרים את השחקן והעולם
+        this.player = new Player(1000, 2000);
         this.world = new GameWorld(player);
         this.hud = new HUD(player);
         this.camera = new Camera(screenWidth, screenHeight);
+        // (השתמשתי בשיטה שהצעתי קודם - גטרים מתוך world)
+        this.worldWidth = world.getMap().layout[0].length * 64;
+        this.worldHeight = world.getMap().layout.length * 64;
     }
 
-    @Override
-    public void onEnter() {
-        super.onEnter(); // מפעיל את הטימר לחסימת מקשים בכניסה
-        // כאן אפשר להוסיף מוזיקת רקע או אתחול ספציפי לשלב
-    }
-
-    // בתוך GameScreen
     @Override
     public void update(double deltaTime) {
-        super.update(deltaTime); // מעדכן את ה-enterLockTimer
+        super.update(deltaTime);
 
-        // מעבירים את ה-this (המסך) כדי שהשחקן יוכל לבדוק canPressEnter()
+        // עדכון עולם
         world.update(deltaTime, input, this);
-        camera.update(player);
+
+        // עדכון מצלמה עם הערכים שחושבו פעם אחת בבנאי
+        camera.update(player, worldWidth, worldHeight);
+
         hud.handleInput(input);
         hud.update(deltaTime);
     }
 
     @Override
     public void render(Graphics2D g) {
-        // שמירת המצב המקורי של הגרפיקה (לפני הזזת המצלמה)
         AffineTransform oldTransform = g.getTransform();
 
-        // --- שכבת העולם (מושפעת מהמצלמה) ---
-        // הזזת נקודת הציור לפי מיקום המצלמה
+        // תרגום המצלמה
         g.translate(-camera.getX(), -camera.getY());
+        world.render(g, camera);
 
-        world.render(g,camera);
-
-        // החזרת הגרפיקה למצב "סטטי" כדי שה-UI לא יזוז עם המצלמה
         g.setTransform(oldTransform);
 
-        // --- שכבת ה-HUD (קבועה על המסך) ---
+        // HUD סטטי
         hud.render(g);
     }
 
     @Override
     public void handleInput(InputManager input) {
-        if (input.ENTER_key) {}
+        // לוגיקה נוספת אם צריך
     }
 }

@@ -13,21 +13,41 @@ public class Camera {
         this.y = 0;
     }
 
-    public void update(Entity target) {
-        // חישוב המיקום כך שהשחקן (target) יהיה בדיוק באמצע המסך
-        // אנחנו לוקחים את מיקום השחקן ומחסירים חצי מהמסך
+    /**
+     * @param target הישות שהמצלמה עוקבת אחריה (השחקן)
+     * @param worldWidth רוחב המפה הכולל בפיקסלים (למשל: מספר עמודות * 64)
+     * @param worldHeight גובה המפה הכולל בפיקסלים (למשל: מספר שורות * 64)
+     */
+    public void update(Entity target, int worldWidth, int worldHeight) {
+        // 1. חישוב המיקום האידיאלי (השחקן במרכז)
         this.x = target.getX() - (screenWidth / 2f) + (target.getWidth() / 2f);
         this.y = target.getY() - (screenHeight / 2f) + (target.getHeight() / 2f);
 
-        // כאן אפשר להוסיף חסימה (Boundary Check) כדי שהמצלמה לא תראה "חלל שחור"
-        // מחוץ למפה:
-        // if (x < 0) x = 0;
-        // if (y < 0) y = 0;
+        // 2. חסימת גבולות (Clamping)
+
+        // מניעת יציאה משמאל (0)
+        if (this.x < 0) {
+            this.x = 0;
+        }
+        // מניעת יציאה מימין (רוחב המפה פחות רוחב המסך)
+        if (this.x > worldWidth - screenWidth) {
+            this.x = worldWidth - screenWidth;
+        }
+
+        // מניעת יציאה מלמעלה (0)
+        if (this.y < 0) {
+            this.y = 0;
+        }
+        // מניעת יציאה מלמטה (גובה המפה פחות גובה המסך)
+        if (this.y > worldHeight - screenHeight) {
+            this.y = worldHeight - screenHeight;
+        }
+
+        // מקרה קצה: אם המפה קטנה מהמסך, נמרכז אותה
+        if (worldWidth < screenWidth) this.x = (worldWidth - screenWidth) / 2f;
+        if (worldHeight < screenHeight) this.y = (worldHeight - screenHeight) / 2f;
     }
 
     public float getX() { return x; }
     public float getY() { return y; }
-
-    public void setX(float x) { this.x = x; }
-    public void setY(float y) { this.y = y; }
 }

@@ -9,43 +9,36 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
-import static engine.Time.deltaTime;
 
 public class Player extends MovableEntity {
 
+    // מאפיינים ייחודיים לשחקן בלבד
     private boolean phoneOpen = false;
     private List<PhoneMessage> phoneMessages;
     private int unreadCount = 0;
 
-    // --- מערכת אנימציה ---
-    private BufferedImage[] walkUp, walkDown, walkLeft, walkRight;
-    private String direction = "DOWN"; // כיוון ברירת מחדל
-    private int animationTick = 0;
-    private int animationFrame = 0;
-    private final int ANIMATION_SPEED = 10; // ככל שהמספר גבוה יותר, האנימציה איטית יותר
-
     public Player(float x, float y) {
-        super(x, y, null); // שולחים null כי נטען את ה-Sprite בתוך loadAnimations
+        // קריאה לבנאי של MovableEntity עם גודל 64x64
+        super(x, y, 64, 64);
+
         this.phoneMessages = new ArrayList<>();
-        this.speed = 250.0f;
-        this.width = 64;
-        this.height = 64;
+        this.speed = 350.0f;
+        this.animationSpeed = 10; // הגדרת מהירות האנימציה שירשנו
+
         loadAnimations();
     }
 
     private void loadAnimations() {
         try {
-            // טעינת הקבצים
+            // טעינת הקבצים המקוריים שלך
             BufferedImage frontSheet = ImageIO.read(getClass().getResourceAsStream("/entities/player-front.png"));
             BufferedImage backSheet  = ImageIO.read(getClass().getResourceAsStream("/entities/player-back.png"));
             BufferedImage sideSheet  = ImageIO.read(getClass().getResourceAsStream("/entities/player-side.png"));
 
-            // חיתוך פריימים (לפי המבנה של התמונות שהעלית)
-            // הערה: הערכים 64 ו-48 הם הערכה, ייתכן ותצטרך לדייק אותם לפי הפיקסלים במדויק
-
+            // השמה למערכים שירשנו מ-MovableEntity
             walkDown = new BufferedImage[] {
-                    frontSheet.getSubimage(0, 64, 64, 64), // פריים 2 (הליכה 1)
-                    frontSheet.getSubimage(0, 128,64, 64) // פריים 3 (הליכה 2)
+                    frontSheet.getSubimage(0, 64, 64, 64),
+                    frontSheet.getSubimage(0, 128, 64, 64)
             };
 
             walkUp = new BufferedImage[] {
@@ -60,56 +53,28 @@ public class Player extends MovableEntity {
 
             walkLeft = new BufferedImage[] {
                     sideSheet.getSubimage(0, 64, 64, 64),
-                    sideSheet.getSubimage(64,64 , 64, 64)
+                    sideSheet.getSubimage(64, 64, 64, 64)
             };
 
-            this.sprite = walkDown[0]; // תמונה התחלתית
+            // קביעת ה-sprite ההתחלתי
+            this.sprite = walkDown[0];
 
         } catch (Exception e) {
             System.out.println("Error loading player sprites: " + e.getMessage());
         }
     }
 
-    // בתוך מחלקת Player
-    public void update(InputManager input,Screen currentScreen) { // הוספנו את המסך כפרמטר
+    public void update(InputManager input, Screen currentScreen) {
         if (!phoneOpen) {
             handleMovement(input);
-            //move(deltaTime);
-            updateAnimation();
+            // שים לב: בתוך ה-GameWorld תקרא ל-player.move(deltaTime).
+            // ה-move יקרא אוטומטית ל-updateAnimation() שירשנו.
         }
-        // בדיקה האם ENTER לחוץ וגם האם עבר מספיק זמן מאז הלחיצה האחרונה
+
+        // לוגיקת טלפון
         if (input.ENTER_key && currentScreen.canPressEnter()) {
             togglePhone();
-            currentScreen.resetEnterTimer(); // מאפס את הטימר כדי למנוע לחיצות נוספות
-        }
-    }
-
-    private void updateAnimation() {
-        // קביעת הכיוון הלוגי לצורך בחירת מערך התמונות
-        if (dx > 0) direction = "RIGHT";
-        else if (dx < 0) direction = "LEFT";
-        else if (dy > 0) direction = "DOWN";
-        else if (dy < 0) direction = "UP";
-
-        // אם השחקן זז, נקדם את הטיקר של האנימציה
-        if (dx != 0 || dy != 0) {
-            animationTick++;
-            if (animationTick >= ANIMATION_SPEED) {
-                animationTick = 0;
-                animationFrame = (animationFrame + 1) % 2; // החלפה בין פריים 0 ל-1
-            }
-
-            // עדכון ה-Sprite הנוכחי
-            switch (direction) {
-                case "UP":    sprite = walkUp[animationFrame]; break;
-                case "DOWN":  sprite = walkDown[animationFrame]; break;
-                case "LEFT":  sprite = walkLeft[animationFrame]; break;
-                case "RIGHT": sprite = walkRight[animationFrame]; break;
-            }
-        } else {
-            // אם הוא עומד, נחזיר לפריים הראשון (עמידה)
-            animationTick = 0;
-            animationFrame = 0;
+            currentScreen.resetEnterTimer();
         }
     }
 
@@ -122,10 +87,13 @@ public class Player extends MovableEntity {
         if (input.D_key) dx = 1;
     }
 
-    // --- שאר הפעולות (Phone, Messages וכו') נשארות ללא שינוי ---
+    // --- מערכת הודעות וטלפון (ללא שינוי לוגי) ---
     public void togglePhone() {
         phoneOpen = !phoneOpen;
-        if (phoneOpen) unreadCount = unreadCount - 1;
+        if (phoneOpen) {
+            stop(); // הפעולה שירשנו מ-MovableEntity שמאפסת dx ו-dy
+        }
+        if (phoneOpen && unreadCount > 0) unreadCount--;
     }
 
     public void addMessage(String sender, String text) {
@@ -134,15 +102,8 @@ public class Player extends MovableEntity {
     }
 
     public boolean isPhoneOpen() { return phoneOpen; }
-
     public List<PhoneMessage> getPhoneMessages() { return phoneMessages; }
-
     public int getUnreadCount() { return unreadCount; }
 
-    @Override
-    public void Render(Graphics g) {
-        if (sprite != null) {
-            g.drawImage(sprite, (int)x, (int)y, width, height, null);
-        }
-    }
+    // הסרנו את Render כי super.Render(g) ב-Entity עושה בדיוק את אותה עבודה
 }
